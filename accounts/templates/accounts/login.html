@@ -1,0 +1,145 @@
+{% extends "accounts/base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+  <div class="auth-card">
+    <h2>Login</h2>
+    <p class="muted">
+      Select the password type you want to test, then enter the matching password.
+      The maximum password length is 8 characters.
+    </p>
+
+    <form method="post" class="form-grid">
+      {% csrf_token %}
+
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+
+      <label>Password type</label>
+      <div class="radio-group">
+        {{ form.password_type }}
+      </div>
+
+      <label id="login-password-label" for="{{ form.password.id_for_label }}">Password</label>
+      <div class="password-counter-wrap">
+        {{ form.password }}
+        <span class="counter-badge" id="login-counter">0/8</span>
+      </div>
+
+      <div class="emoji-picker" id="login-emoji-picker" style="display: none;">
+        <button type="button" class="emoji-btn">🌮</button>
+        <button type="button" class="emoji-btn">🦋</button>
+        <button type="button" class="emoji-btn">🎸</button>
+        <button type="button" class="emoji-btn">🐙</button>
+        <button type="button" class="emoji-btn">🍄</button>
+        <button type="button" class="emoji-btn">🚀</button>
+        <button type="button" class="emoji-btn">💎</button>
+        <button type="button" class="emoji-btn">🔥</button>
+        <button type="button" class="emoji-btn">🎯</button>
+        <button type="button" class="emoji-btn">🦊</button>
+        <button type="button" class="emoji-btn">🌊</button>
+        <button type="button" class="emoji-btn">🪐</button>
+      </div>
+
+      <div class="picker-actions" id="login-picker-actions" style="display: none;">
+        <button type="button" class="btn btn-secondary small-btn" id="login-backspace">⌫</button>
+        <button type="button" class="btn btn-secondary small-btn" id="login-clear">↺</button>
+      </div>
+
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
+      <button class="btn btn-primary full" type="submit">Log in</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const loginPasswordInput = document.querySelector('input[name="password"]');
+  const loginCounter = document.getElementById("login-counter");
+  const loginLabel = document.getElementById("login-password-label");
+  const loginEmojiPicker = document.getElementById("login-emoji-picker");
+  const loginPickerActions = document.getElementById("login-picker-actions");
+  const loginEmojiButtons = document.querySelectorAll("#login-emoji-picker .emoji-btn");
+  const loginBackspaceBtn = document.getElementById("login-backspace");
+  const loginClearBtn = document.getElementById("login-clear");
+
+  function charCount(str) {
+    return Array.from(str || "").length;
+  }
+
+  function trimToMaxLength(inputEl, maxLen) {
+    const chars = Array.from(inputEl.value || "");
+    if (chars.length > maxLen) {
+      inputEl.value = chars.slice(0, maxLen).join("");
+    }
+  }
+
+  function getSelectedPasswordType() {
+    const selected = document.querySelector('input[name="password_type"]:checked');
+    return selected ? selected.value : "text";
+  }
+
+  function updateLoginUI() {
+    const selectedType = getSelectedPasswordType();
+
+    if (selectedType === "emoji") {
+      loginLabel.textContent = "Emoji password";
+      loginPasswordInput.placeholder = "Enter emoji password";
+      loginPasswordInput.type = "text";
+      loginEmojiPicker.style.display = "grid";
+      loginPickerActions.style.display = "flex";
+    } else if (selectedType === "mix") {
+      loginLabel.textContent = "Mix password";
+      loginPasswordInput.placeholder = "Enter mix password";
+      loginPasswordInput.type = "text";
+      loginEmojiPicker.style.display = "grid";
+      loginPickerActions.style.display = "flex";
+    } else {
+      loginLabel.textContent = "Text password";
+      loginPasswordInput.placeholder = "Enter text password";
+      loginPasswordInput.type = "password";
+      loginEmojiPicker.style.display = "none";
+      loginPickerActions.style.display = "none";
+    }
+
+    trimToMaxLength(loginPasswordInput, 8);
+    loginCounter.textContent = `${charCount(loginPasswordInput.value)}/8`;
+  }
+
+  loginEmojiButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const current = Array.from(loginPasswordInput.value || "");
+      if (current.length >= 8) return;
+      loginPasswordInput.value += btn.textContent;
+      updateLoginUI();
+    });
+  });
+
+  loginBackspaceBtn.addEventListener("click", () => {
+    const chars = Array.from(loginPasswordInput.value || "");
+    chars.pop();
+    loginPasswordInput.value = chars.join("");
+    updateLoginUI();
+  });
+
+  loginClearBtn.addEventListener("click", () => {
+    loginPasswordInput.value = "";
+    updateLoginUI();
+  });
+
+  document.querySelectorAll('input[name="password_type"]').forEach(item => {
+    item.addEventListener("change", updateLoginUI);
+  });
+
+  if (loginPasswordInput) {
+    loginPasswordInput.addEventListener("input", updateLoginUI);
+  }
+
+  window.addEventListener("load", updateLoginUI);
+</script>
+{% endblock %}

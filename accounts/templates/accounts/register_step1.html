@@ -1,0 +1,73 @@
+{% extends "accounts/base.html" %}
+{% block title %}Register Text{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+  <div class="auth-card">
+    <div class="section-tag">Step 1 of 2</div>
+    <h2>Create your text password account</h2>
+    <p class="muted">
+      Complete text password registration first. Emoji registration will unlock after this step.
+    </p>
+
+    <form method="post" class="form-grid">
+      {% csrf_token %}
+
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+
+      <label for="{{ form.password.id_for_label }}">Text / numeric password</label>
+      <div class="password-counter-wrap">
+        {{ form.password }}
+        <span class="counter-badge" id="text-counter">0/8</span>
+      </div>
+
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
+      <button class="btn btn-primary full" type="submit">Complete step 1</button>
+    </form>
+  </div>
+</div>
+
+{% if show_unlock_modal %}
+<div class="modal-backdrop" id="unlockModal">
+  <div class="modal-card">
+    <h3>Step 1 complete</h3>
+    <p>Your emoji password registration is now unlocked.</p>
+    <div class="modal-actions">
+      <a href="{% url 'register_emoji' %}" class="btn btn-primary">Go to step 2</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  const textInput = document.querySelector('input[name="password"]');
+  const textCounter = document.getElementById("text-counter");
+
+  function charCount(str) {
+    return Array.from(str || "").length;
+  }
+
+  function trimToMaxLength(inputEl, maxLen) {
+    const chars = Array.from(inputEl.value || "");
+    if (chars.length > maxLen) {
+      inputEl.value = chars.slice(0, maxLen).join("");
+    }
+  }
+
+  function updateTextCounter() {
+    trimToMaxLength(textInput, 8);
+    textCounter.textContent = `${charCount(textInput.value)}/8`;
+  }
+
+  if (textInput) {
+    textInput.addEventListener("input", updateTextCounter);
+    window.addEventListener("load", updateTextCounter);
+  }
+</script>
+{% endblock %}

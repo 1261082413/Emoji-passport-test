@@ -1,0 +1,103 @@
+{% extends "accounts/base.html" %}
+{% block title %}Register Mix{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+  <div class="auth-card">
+    <div class="section-tag dark">Step 3 of 3</div>
+    <h2>Create your mixed password account</h2>
+    <p class="muted">
+      Your mix password must be 8 characters or fewer, and it must include at least 3 emojis plus text or numbers.
+    </p>
+
+    <form method="post" class="form-grid">
+      {% csrf_token %}
+
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+
+      <label for="{{ form.password.id_for_label }}">Mix password</label>
+      <div class="password-counter-wrap">
+        {{ form.password }}
+        <span class="counter-badge" id="mix-counter">0/8</span>
+      </div>
+
+      <div class="emoji-picker">
+        <button type="button" class="emoji-btn">🌮</button>
+        <button type="button" class="emoji-btn">🦋</button>
+        <button type="button" class="emoji-btn">🎸</button>
+        <button type="button" class="emoji-btn">🐙</button>
+        <button type="button" class="emoji-btn">🍄</button>
+        <button type="button" class="emoji-btn">🚀</button>
+        <button type="button" class="emoji-btn">💎</button>
+        <button type="button" class="emoji-btn">🔥</button>
+        <button type="button" class="emoji-btn">🎯</button>
+        <button type="button" class="emoji-btn">🦊</button>
+        <button type="button" class="emoji-btn">🌊</button>
+        <button type="button" class="emoji-btn">🪐</button>
+      </div>
+
+      <div class="picker-actions">
+        <button type="button" class="btn btn-secondary small-btn" id="mix-backspace">⌫</button>
+        <button type="button" class="btn btn-secondary small-btn" id="mix-clear">↺</button>
+      </div>
+
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
+      <button class="btn btn-primary full" type="submit">Create mix account</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const mixInput = document.querySelector('input[name="password"]');
+  const mixCounter = document.getElementById("mix-counter");
+  const mixButtons = document.querySelectorAll(".emoji-btn");
+  const mixBackspaceBtn = document.getElementById("mix-backspace");
+  const mixClearBtn = document.getElementById("mix-clear");
+
+  function charCount(str) {
+    return Array.from(str || "").length;
+  }
+
+  function trimToMaxLength(inputEl, maxLen) {
+    const chars = Array.from(inputEl.value || "");
+    if (chars.length > maxLen) {
+      inputEl.value = chars.slice(0, maxLen).join("");
+    }
+  }
+
+  function updateMixCounter() {
+    trimToMaxLength(mixInput, 8);
+    mixCounter.textContent = `${charCount(mixInput.value)}/8`;
+  }
+
+  mixButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const current = Array.from(mixInput.value || "");
+      if (current.length >= 8) return;
+      mixInput.value += btn.textContent;
+      updateMixCounter();
+    });
+  });
+
+  mixBackspaceBtn.addEventListener("click", () => {
+    const chars = Array.from(mixInput.value || "");
+    chars.pop();
+    mixInput.value = chars.join("");
+    updateMixCounter();
+  });
+
+  mixClearBtn.addEventListener("click", () => {
+    mixInput.value = "";
+    updateMixCounter();
+  });
+
+  mixInput.addEventListener("input", updateMixCounter);
+  window.addEventListener("load", updateMixCounter);
+</script>
+{% endblock %}

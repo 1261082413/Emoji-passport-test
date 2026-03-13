@@ -1,0 +1,51 @@
+{% extends "accounts/base.html" %}
+{% block title %}Survey{% endblock %}
+
+{% block content %}
+<div class="survey-layout">
+  <div class="survey-card">
+    <div class="section-tag dark">Final Step</div>
+    <h2>Password Experience Survey</h2>
+    <p class="muted">
+      You have successfully logged into both systems. Please complete this short survey.
+    </p>
+
+    <form method="post" class="survey-form">
+      {% csrf_token %}
+
+      <div class="survey-block">
+        <h4>1. Which password type did you use?</h4>
+        {{ form.used_password_type }}
+      </div>
+
+      <div class="survey-block">
+        <h4>2. Which was easier to remember?</h4>
+        {{ form.easier_to_remember }}
+      </div>
+
+      <div class="survey-block">
+        <h4>3. Which was faster to type?</h4>
+        {{ form.faster_to_type }}
+      </div>
+
+      <div class="survey-block">
+        <h4>4. Which would you use in real life?</h4>
+        {{ form.real_life_choice }}
+      </div>
+
+      <div class="survey-block">
+        <h4>5. Any other comments?</h4>
+        {{ form.comments }}
+      </div>
+
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
+      <button class="btn btn-primary full" type="submit">Submit survey</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

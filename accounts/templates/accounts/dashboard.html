@@ -1,0 +1,99 @@
+{% extends "accounts/base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+  <div class="info-card">
+    <h2>Welcome, {{ username }}</h2>
+    <p class="muted">
+      This dashboard shows your progress across the text, emoji, and mix password systems.
+    </p>
+
+    <div class="status-grid">
+      <div class="status-box">
+        <span>Text account</span>
+        <strong>{% if text_account %}Created{% else %}Not created{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Emoji account</span>
+        <strong>{% if emoji_account %}Created{% else %}Not created{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Mix account</span>
+        <strong>{% if mix_account %}Created{% else %}Not created{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Text login</span>
+        <strong>{% if text_logged_in %}Done{% else %}Pending{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Emoji login</span>
+        <strong>{% if emoji_logged_in %}Done{% else %}Pending{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Mix login</span>
+        <strong>{% if mix_logged_in %}Done{% else %}Pending{% endif %}</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Success rate</span>
+        <strong>{{ success_rate }}%</strong>
+      </div>
+
+      <div class="status-box">
+        <span>Survey</span>
+        <strong>{% if survey_done %}Submitted{% else %}Pending{% endif %}</strong>
+      </div>
+    </div>
+
+    <div class="hero-actions top-gap">
+      <a class="btn btn-secondary" href="{% url 'login' %}">Try another login</a>
+
+      {% if text_logged_in and emoji_logged_in and mix_logged_in and not survey_done %}
+        <a class="btn btn-primary" href="{% url 'survey' %}">Complete survey</a>
+      {% endif %}
+
+      <a class="btn btn-secondary" href="{% url 'logout' %}">Logout</a>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h3>Recent login attempts</h3>
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Duration (ms)</th>
+          <th>Success</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attempts %}
+          <tr>
+            <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ a.password_type }}</td>
+            <td>{{ a.duration_ms }}</td>
+            <td>
+              {% if a.success %}
+                <span class="pill success">Success</span>
+              {% else %}
+                <span class="pill danger">Failed</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">No login attempts yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

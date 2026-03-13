@@ -1,0 +1,117 @@
+{% extends "accounts/base.html" %}
+{% block title %}Register Emoji{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+  <div class="auth-card">
+    <div class="section-tag purple">Step 2 of 3</div>
+    <h2>Create your emoji password account</h2>
+    <p class="muted">
+      Use at least 3 emojis. The maximum length is 8 characters.
+    </p>
+
+    <form method="post" class="form-grid">
+      {% csrf_token %}
+
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+
+      <label for="{{ form.password.id_for_label }}">Emoji password</label>
+      <div class="password-counter-wrap">
+        {{ form.password }}
+        <span class="counter-badge" id="emoji-counter">0/8</span>
+      </div>
+
+      <div class="emoji-picker">
+        <button type="button" class="emoji-btn">🌮</button>
+        <button type="button" class="emoji-btn">🦋</button>
+        <button type="button" class="emoji-btn">🎸</button>
+        <button type="button" class="emoji-btn">🐙</button>
+        <button type="button" class="emoji-btn">🍄</button>
+        <button type="button" class="emoji-btn">🚀</button>
+        <button type="button" class="emoji-btn">💎</button>
+        <button type="button" class="emoji-btn">🔥</button>
+        <button type="button" class="emoji-btn">🎯</button>
+        <button type="button" class="emoji-btn">🦊</button>
+        <button type="button" class="emoji-btn">🌊</button>
+        <button type="button" class="emoji-btn">🪐</button>
+      </div>
+
+      <div class="picker-actions">
+        <button type="button" class="btn btn-secondary small-btn" id="emoji-backspace">⌫</button>
+        <button type="button" class="btn btn-secondary small-btn" id="emoji-clear">↺</button>
+      </div>
+
+      {% if form.errors %}
+        <div class="form-errors">
+          {{ form.errors }}
+        </div>
+      {% endif %}
+
+      <button class="btn btn-primary full" type="submit">Create emoji account</button>
+    </form>
+  </div>
+</div>
+
+{% if show_mix_modal %}
+<div class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-icon">🚀</div>
+    <h3>Emoji password done!</h3>
+    <p>
+      Mix mode is now unlocked. Continue to create a mixed password with text and at least 3 emojis.
+    </p>
+    <a class="btn btn-gradient full" href="{% url 'register_mix' %}">Try Mix next →</a>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  const emojiInput = document.querySelector('input[name="password"]');
+  const emojiCounter = document.getElementById("emoji-counter");
+  const emojiButtons = document.querySelectorAll(".emoji-btn");
+  const backspaceBtn = document.getElementById("emoji-backspace");
+  const clearBtn = document.getElementById("emoji-clear");
+
+  function charCount(str) {
+    return Array.from(str).length;
+  }
+
+  function trimToMaxLength(inputEl, maxLen) {
+    const chars = Array.from(inputEl.value);
+    if (chars.length > maxLen) {
+      inputEl.value = chars.slice(0, maxLen).join("");
+    }
+  }
+
+  function updateCounter() {
+    trimToMaxLength(emojiInput, 8);
+    const count = charCount(emojiInput.value);
+    emojiCounter.textContent = `${count}/8`;
+  }
+
+  emojiButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const current = Array.from(emojiInput.value);
+      if (current.length >= 8) return;
+      emojiInput.value += btn.textContent;
+      updateCounter();
+    });
+  });
+
+  backspaceBtn.addEventListener("click", () => {
+    const chars = Array.from(emojiInput.value);
+    chars.pop();
+    emojiInput.value = chars.join("");
+    updateCounter();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    emojiInput.value = "";
+    updateCounter();
+  });
+
+  emojiInput.addEventListener("input", updateCounter);
+  window.addEventListener("load", updateCounter);
+</script>
+{% endblock %}

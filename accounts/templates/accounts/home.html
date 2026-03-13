@@ -1,0 +1,35 @@
+{% extends "accounts/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero-card">
+  <div class="hero-text">
+    <span class="eyebrow">Usability Study Prototype</span>
+    <h1>Group B: Improving passwords using emojis</h1>
+    <p>
+      Start with a text password registration first. After that, emoji password mode
+      will unlock automatically. Once you have logged into both systems, you can complete the survey.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{% url 'register_step1' %}">Start registration</a>
+      <a class="btn btn-secondary" href="{% url 'login' %}">Go to login</a>
+    </div>
+  </div>
+
+  <div class="hero-panel">
+    <div class="mini-status">
+      <div class="mini-badge">Step 1</div>
+      <p>Register with text password</p>
+    </div>
+    <div class="mini-status">
+      <div class="mini-badge purple">Step 2</div>
+      <p>Unlock emoji password</p>
+    </div>
+    <div class="mini-status">
+      <div class="mini-badge dark">Step 3</div>
+      <p>Login to both and complete survey</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
